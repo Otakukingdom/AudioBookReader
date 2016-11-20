@@ -30,4 +30,8 @@ public class Directory {
         this.createdAt = new Date();
     }
 
+    public String toString() {
+        return this.fullPath;
+    }
+
 }

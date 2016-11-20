@@ -3,16 +3,29 @@ package com.otakukingdom.audiobook.services;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
+import com.otakukingdom.audiobook.controllers.SettingController;
 import com.otakukingdom.audiobook.model.Directory;
+import com.otakukingdom.audiobook.observers.DirectoryObserver;
+import javafx.event.Event;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by mistlight on 11/20/2016.
  */
 public class DirectoryService {
+
+    public DirectoryService() {
+        this.directoryObservers = new ArrayList<DirectoryObserver>();
+    }
+
+    public void addObserver(DirectoryObserver observer) {
+        this.directoryObservers.add(observer);
+    }
+
 
     /**
      *
@@ -51,6 +64,10 @@ public class DirectoryService {
             Directory newDirectory = new Directory(file.getAbsolutePath());
             directoryDao.create(newDirectory);
 
+            for(DirectoryObserver observer : directoryObservers) {
+                observer.directoryListUpdated();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -78,6 +95,10 @@ public class DirectoryService {
                 }
             }
 
+            for(DirectoryObserver observer : directoryObservers) {
+                observer.directoryListUpdated();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -86,4 +107,5 @@ public class DirectoryService {
         return true;
     }
 
+    private List<DirectoryObserver> directoryObservers;
 }
