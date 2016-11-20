@@ -4,11 +4,14 @@
 
 package com.otakukingdom.audiobook;
 
+import com.otakukingdom.audiobook.services.DatabaseService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.sql.SQLException;
 
 public class Main extends Application {
 
@@ -25,6 +28,13 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
+        DatabaseService databaseService = DatabaseService.getInstance();
+        try {
+            databaseService.initDb();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         launch(args);
     }
 }

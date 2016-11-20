@@ -1,5 +1,6 @@
 package com.otakukingdom.audiobook.controllers;
 
+import com.otakukingdom.audiobook.services.SettingService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,8 +19,9 @@ import java.io.IOException;
  */
 public class MainController {
 
-    @FXML
-    private VBox mainPane;
+    public void initialize() {
+        settingService = new SettingService();
+    }
 
     @FXML
     public void handleSettingsAction(ActionEvent event) throws IOException {
@@ -46,6 +48,9 @@ public class MainController {
 
     }
 
-    public void initialize() {
-    }
+    @FXML
+    private VBox mainPane;
+
+    // non FXML instance vars
+    private SettingService settingService;
 }
