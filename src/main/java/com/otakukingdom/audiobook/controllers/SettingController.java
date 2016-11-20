@@ -23,7 +23,7 @@ public class SettingController {
         if(selectedDirectory == null) {
             System.out.println("No directory chosen");
         } else {
-            System.out.println(selectedDirectory.getAbsolutePath());
+            directoryService.addDirectory(selectedDirectory);
         }
     }
 
