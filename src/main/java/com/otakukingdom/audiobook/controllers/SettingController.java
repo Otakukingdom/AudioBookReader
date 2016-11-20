@@ -4,11 +4,12 @@ import com.otakukingdom.audiobook.model.Directory;
 import com.otakukingdom.audiobook.observers.DirectoryObserver;
 import com.otakukingdom.audiobook.services.DirectoryService;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -35,7 +36,22 @@ public class SettingController implements DirectoryObserver {
 
     @FXML
     public void handleRemoveDirectoryAction(ActionEvent event) {
+        Directory selectedDirectory =
+                this.directoryListUI.getSelectionModel().getSelectedItem();
+        if(selectedDirectory != null) {
+            directoryService.removeDirectory(selectedDirectory.getFullPath());
+        }
+    }
 
+    @FXML
+    public void handleListClickedAction(MouseEvent event) {
+        Directory selectedDirectory =
+                this.directoryListUI.getSelectionModel().getSelectedItem();
+        if(selectedDirectory != null) {
+            removeDirectoryButton.setDisable(false);
+        } else {
+            removeDirectoryButton.setDisable(true);
+        }
     }
 
     @FXML
@@ -51,19 +67,24 @@ public class SettingController implements DirectoryObserver {
         directoryListUpdated();
     }
 
-    @FXML
-    private TabPane rootPane;
-
-    @FXML
-    private ListView<Directory> directoryListUI;
-
-    // non FXML instance vars
-    private DirectoryService directoryService;
-
+    // Callback
     public void directoryListUpdated() {
         List<Directory> directoryList = directoryService.getDirectories();
         if(directoryList != null) {
             directoryListUI.setItems(FXCollections.<Directory>observableArrayList(directoryList));
         }
     }
+
+    @FXML
+    private TabPane rootPane;
+
+    @FXML
+    private ListView<Directory> directoryListUI;
+
+    @FXML
+    private Button removeDirectoryButton;
+
+    // non FXML instance vars
+    private DirectoryService directoryService;
+
 }

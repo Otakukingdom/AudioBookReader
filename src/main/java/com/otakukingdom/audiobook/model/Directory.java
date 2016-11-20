@@ -30,6 +30,10 @@ public class Directory {
         this.createdAt = new Date();
     }
 
+    public String getFullPath() {
+        return this.fullPath;
+    }
+
     public String toString() {
         return this.fullPath;
     }
