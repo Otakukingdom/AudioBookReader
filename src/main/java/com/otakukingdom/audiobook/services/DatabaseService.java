@@ -3,6 +3,8 @@ package com.otakukingdom.audiobook.services;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.otakukingdom.audiobook.model.AudioBook;
+import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.model.Directory;
 
 import java.sql.SQLException;
@@ -47,6 +49,8 @@ public class DatabaseService {
         if(cs != null) {
             try {
                 TableUtils.createTableIfNotExists(cs, Directory.class);
+                TableUtils.createTableIfNotExists(cs, AudioBook.class);
+                TableUtils.createTableIfNotExists(cs, AudioBookFile.class);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

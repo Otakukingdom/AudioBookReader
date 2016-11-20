@@ -3,10 +3,8 @@ package com.otakukingdom.audiobook.services;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
-import com.otakukingdom.audiobook.controllers.SettingController;
 import com.otakukingdom.audiobook.model.Directory;
 import com.otakukingdom.audiobook.observers.DirectoryObserver;
-import javafx.event.Event;
 
 import java.io.File;
 import java.sql.SQLException;
