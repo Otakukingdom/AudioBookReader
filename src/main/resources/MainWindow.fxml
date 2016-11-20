@@ -15,13 +15,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.otakukingdom.audiobook.controllers.MainController">
    <children>
       <MenuBar VBox.vgrow="NEVER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem fx:id="menuClose" mnemonicParsing="false" onAction="#handleCloseAction" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -31,7 +31,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="menuAbout" mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
@@ -53,7 +53,7 @@
       <Slider maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="NEVER" />
       <HBox prefHeight="14.0" prefWidth="545.0" VBox.vgrow="NEVER">
          <children>
-            <Button mnemonicParsing="false" text="Button" />
+            <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#handlePlayAction" text="Play" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
             <Slider />
          </children>
