@@ -6,6 +6,7 @@ import com.otakukingdom.audiobook.model.AudioBook;
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.model.Directory;
 import com.otakukingdom.audiobook.observers.DirectoryObserver;
+import com.otakukingdom.audiobook.observers.ScanObserver;
 import org.apache.tika.Tika;
 
 import java.io.File;
@@ -24,15 +25,22 @@ public class AudioBookScanService implements DirectoryObserver {
         this.directoryService = directoryService;
         this.directoryList = this.directoryService.getDirectories();
         this.directoryService.addObserver(this);
+        this.scanObserverList = new ArrayList<ScanObserver>();
     }
 
     /**
      * Perform the scanning of Audiobooks
      */
     public void scan() {
+        boolean hasScanned = false;
+
         for(Directory currentDirectory : this.directoryList) {
             Date lastScanned = currentDirectory.getLastScanned();
             if(lastScanned == null) {
+                // perform scanning
+                scanDirectory(currentDirectory, currentDirectory.getFullPath());
+
+                // update the last scanned date
                 currentDirectory.setLastScanned();
                 try {
                     Dao<Directory, Integer> directoryDao =
@@ -42,7 +50,15 @@ public class AudioBookScanService implements DirectoryObserver {
                     e.printStackTrace();
                 }
 
-                scanDirectory(currentDirectory, currentDirectory.getFullPath());
+
+                hasScanned = true;
+            }
+        }
+
+        // if we have recently scanned anything, notify the observers
+        if (hasScanned) {
+            for (ScanObserver currentObserver : scanObserverList) {
+                currentObserver.audiobookDirectoryScanned();
             }
         }
     }
@@ -51,15 +67,30 @@ public class AudioBookScanService implements DirectoryObserver {
      * Perform the re-scanning of Audiobooks
      */
     public void rescanAll() {
+        boolean hasScanned = false;
+
         for(Directory currentDirectory : this.directoryList) {
-            currentDirectory.setLastScanned();
+            // perform the scanning
             scanDirectory(currentDirectory, currentDirectory.getFullPath());
+
+            // update the last scanned date
+            currentDirectory.setLastScanned();
             try {
                 Dao<Directory, Integer> directoryDao =
                         DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), Directory.class);
                 directoryDao.update(currentDirectory);
             } catch (SQLException e) {
                 e.printStackTrace();
+            }
+
+            hasScanned = true;
+        }
+
+
+        // if we have recently scanned anything, notify the observers
+        if (hasScanned) {
+            for (ScanObserver currentObserver : scanObserverList) {
+                currentObserver.audiobookDirectoryScanned();
             }
         }
     }
@@ -188,9 +219,15 @@ public class AudioBookScanService implements DirectoryObserver {
         this.scan();
     }
 
+    public void addObserver(ScanObserver scanObserver) {
+        this.scanObserverList.add(scanObserver);
+    }
+
     private DirectoryService directoryService;
     private List<Directory> directoryList;
     private List<AudioBook> audioBooks;
     private List<AudioBookFile> audioBookFiles;
+
+    private List<ScanObserver> scanObserverList;
 
 }

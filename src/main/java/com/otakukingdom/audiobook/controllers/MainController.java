@@ -2,6 +2,7 @@ package com.otakukingdom.audiobook.controllers;
 
 import com.otakukingdom.audiobook.services.AudioBookScanService;
 import com.otakukingdom.audiobook.services.DirectoryService;
+import com.otakukingdom.audiobook.services.LibraryService;
 import com.otakukingdom.audiobook.services.SettingService;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -71,6 +72,7 @@ public class MainController {
     // non FXML instance vars
     private SettingService settingService;
     private AudioBookScanService audioBookScanService;
+    private LibraryService libraryService;
     private DirectoryService directoryService;
 
 }
