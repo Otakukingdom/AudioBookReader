@@ -2,6 +2,7 @@ package com.otakukingdom.audiobook.controllers;
 
 import com.otakukingdom.audiobook.model.Directory;
 import com.otakukingdom.audiobook.observers.DirectoryObserver;
+import com.otakukingdom.audiobook.services.AudioBookScanService;
 import com.otakukingdom.audiobook.services.DirectoryService;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -67,6 +68,14 @@ public class SettingController implements DirectoryObserver {
         directoryListUpdated();
     }
 
+    public void setAudioBookScanService(AudioBookScanService audioBookScanService) {
+        this.audioBookScanService = audioBookScanService;
+    }
+
+    public void handleRescanAction() {
+        this.audioBookScanService.rescanAll();
+    }
+
     // Callback
     public void directoryListUpdated() {
         List<Directory> directoryList = directoryService.getDirectories();
@@ -86,5 +95,6 @@ public class SettingController implements DirectoryObserver {
 
     // non FXML instance vars
     private DirectoryService directoryService;
+    private AudioBookScanService audioBookScanService;
 
 }

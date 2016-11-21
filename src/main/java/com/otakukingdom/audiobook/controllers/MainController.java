@@ -60,6 +60,7 @@ public class MainController {
         // pass the directory service variables
         SettingController settingController = loader.getController();
         settingController.setDirectoryService(this.directoryService);
+        settingController.setAudioBookScanService(this.audioBookScanService);
 
         Stage stage = new Stage();
 
