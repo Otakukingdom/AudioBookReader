@@ -63,6 +63,8 @@ public class SettingController implements DirectoryObserver {
     public void setDirectoryService(DirectoryService directoryService) {
         this.directoryService = directoryService;
         this.directoryService.addObserver(this);
+
+        directoryListUpdated();
     }
 
     // Callback
