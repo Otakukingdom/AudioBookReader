@@ -1,10 +1,12 @@
 package com.otakukingdom.audiobook.controllers;
 
+import com.otakukingdom.audiobook.model.AudioBook;
 import com.otakukingdom.audiobook.services.AudioBookScanService;
 import com.otakukingdom.audiobook.services.DirectoryService;
 import com.otakukingdom.audiobook.services.LibraryService;
 import com.otakukingdom.audiobook.services.SettingService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +18,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mistlight on 11/20/2016.
@@ -23,7 +28,7 @@ import java.io.IOException;
 public class MainController {
 
     public void initialize() {
-        settingService = new SettingService();
+        this.settingService = new SettingService();
     }
 
     public void setDirectoryService(DirectoryService directoryService) {
@@ -33,6 +38,16 @@ public class MainController {
     public void setAudioBookScanService(AudioBookScanService audioBookScanService) {
         this.audioBookScanService = audioBookScanService;
         this.audioBookScanService.scan();
+
+        try {
+            this.libraryService = new LibraryService(audioBookScanService);
+            this.audioBookList = this.libraryService.getAudioBookList();
+        } catch (SQLException e) {
+            this.audioBookList = new ArrayList<AudioBook>();
+            e.printStackTrace();
+        }
+
+        libraryListViewUI.setItems(FXCollections.<AudioBook>observableArrayList(this.audioBookList));
     }
 
     @FXML
@@ -69,10 +84,15 @@ public class MainController {
     @FXML
     private VBox mainPane;
 
+    @FXML
+    private ListView<AudioBook> libraryListViewUI;
+
     // non FXML instance vars
     private SettingService settingService;
     private AudioBookScanService audioBookScanService;
     private LibraryService libraryService;
     private DirectoryService directoryService;
+
+    private List<AudioBook> audioBookList;
 
 }

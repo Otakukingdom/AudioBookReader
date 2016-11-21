@@ -48,12 +48,25 @@ public class AudioBook {
         this.createdAt = new Date();
     }
 
+    public Integer getDefaultOrder() {
+        return this.defaultOrder;
+    }
+
+    public void setDefaultOrder(Integer defaultOrder) {
+        this.defaultOrder = defaultOrder;
+    }
+
     public String generateName(String path) {
         File file = new File(path);
         return file.getName();
     }
 
+
     public Integer getId() {
         return this.id;
+    }
+
+    public String toString() {
+        return this.name;
     }
 }

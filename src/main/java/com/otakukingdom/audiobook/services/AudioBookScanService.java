@@ -58,7 +58,7 @@ public class AudioBookScanService implements DirectoryObserver {
         // if we have recently scanned anything, notify the observers
         if (hasScanned) {
             for (ScanObserver currentObserver : scanObserverList) {
-                currentObserver.audiobookDirectoryScanned();
+                currentObserver.audioBookDirectoryScanned();
             }
         }
     }
@@ -90,7 +90,7 @@ public class AudioBookScanService implements DirectoryObserver {
         // if we have recently scanned anything, notify the observers
         if (hasScanned) {
             for (ScanObserver currentObserver : scanObserverList) {
-                currentObserver.audiobookDirectoryScanned();
+                currentObserver.audioBookDirectoryScanned();
             }
         }
     }
