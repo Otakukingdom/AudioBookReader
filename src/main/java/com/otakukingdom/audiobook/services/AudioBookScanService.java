@@ -1,22 +1,29 @@
 package com.otakukingdom.audiobook.services;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import com.otakukingdom.audiobook.model.AudioBook;
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.model.Directory;
+import com.otakukingdom.audiobook.observers.DirectoryObserver;
 import org.apache.tika.Tika;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by mistlight on 11/20/2016.
  */
-public class AudioBookScanService {
+public class AudioBookScanService implements DirectoryObserver {
 
-    public AudioBookScanService(List<Directory> directoryList) {
-        this.directoryList = directoryList;
+    public AudioBookScanService(DirectoryService directoryService) {
+        this.directoryService = directoryService;
+        this.directoryList = this.directoryService.getDirectories();
+        this.directoryService.addObserver(this);
     }
 
     /**
@@ -24,7 +31,36 @@ public class AudioBookScanService {
      */
     public void scan() {
         for(Directory currentDirectory : this.directoryList) {
+            Date lastScanned = currentDirectory.getLastScanned();
+            if(lastScanned == null) {
+                currentDirectory.setLastScanned();
+                try {
+                    Dao<Directory, Integer> directoryDao =
+                            DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), Directory.class);
+                    directoryDao.update(currentDirectory);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                scanDirectory(currentDirectory, currentDirectory.getFullPath());
+            }
+        }
+    }
+
+    /**
+     * Perform the re-scanning of Audiobooks
+     */
+    public void rescanAll() {
+        for(Directory currentDirectory : this.directoryList) {
+            currentDirectory.setLastScanned();
             scanDirectory(currentDirectory, currentDirectory.getFullPath());
+            try {
+                Dao<Directory, Integer> directoryDao =
+                        DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), Directory.class);
+                directoryDao.update(currentDirectory);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -64,8 +100,59 @@ public class AudioBookScanService {
 
     }
 
-    public void registerAudioBook(Directory directory, String directoryPath, List<File> audioFiles) {
-        System.out.println("REGISTER AUDIO BOOK CALLED ON:" + directoryPath);
+    public boolean registerAudioBook(Directory directory, String directoryPath, List<File> audioFiles) {
+        // check if there is an audio book entry already on this audiobook
+        try {
+            Dao<AudioBook, Integer> audiobookDao =
+                    DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBook.class);
+            List<AudioBook> audioBookList = audiobookDao.queryForEq("fullPath", directoryPath);
+            AudioBook audioBook = null;
+            if(audioBookList.size() > 0) {
+                audioBook = audioBookList.get(0);
+            } else {
+                audioBook = new AudioBook(directory.getId(), directoryPath);
+                audiobookDao.create(audioBook);
+            }
+
+            Integer audiobookId = audioBook.getId();
+
+            // will be set to true if even one failure occurs
+            boolean hasNoFail = true;
+            for(File currentAudioFile : audioFiles) {
+                if(!registerAudioFile(audiobookId, currentAudioFile)) {
+                    hasNoFail = false;
+                }
+            }
+
+            return hasNoFail;
+
+        } catch (SQLException e) {
+            // if we are here, it means something is wrong with the database
+            return false;
+        }
+    }
+
+    private boolean registerAudioFile(Integer audiobookId, File currentAudioFile) {
+        try {
+            Dao<AudioBookFile, Integer> audiobookFileDao =
+                    DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
+            List<AudioBookFile> fileList = audiobookFileDao.
+                    queryBuilder().
+                    where().
+                    eq("fullPath", currentAudioFile.getAbsolutePath()).and().
+                    eq("audiobookId", audiobookId).query();
+
+            if(fileList.size() == 0) {
+                AudioBookFile audiobookFile = new AudioBookFile(audiobookId, currentAudioFile.getAbsolutePath());
+                audiobookFileDao.create(audiobookFile);
+            }
+
+        } catch (SQLException e) {
+            // if we are here, it means something went seriously wrong connecting to the database
+            return false;
+        }
+
+        return true;
     }
 
     // check if the file is an audiobook file (aka an audio file)
@@ -73,7 +160,9 @@ public class AudioBookScanService {
         Tika tika = new Tika();
         try {
             String mediaType = tika.detect(file);
-            System.out.println("MEDIATYPE IS:" + mediaType);
+            if(!mediaType.startsWith("audio")) {
+                return false;
+            }
         } catch (IOException e) {
             return false;
         }
@@ -91,8 +180,14 @@ public class AudioBookScanService {
         return false;
     }
 
+    public void directoryListUpdated() {
+        // when directory list updates, we must rescan everything
+        scan();
+    }
 
+    private DirectoryService directoryService;
     private List<Directory> directoryList;
     private List<AudioBook> audioBooks;
     private List<AudioBookFile> audioBookFiles;
+
 }

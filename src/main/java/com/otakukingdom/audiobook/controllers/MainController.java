@@ -38,7 +38,13 @@ public class MainController {
     public void handleSettingsAction(ActionEvent event) throws IOException {
         Parent root;
 
-        root = FXMLLoader.load(getClass().getClassLoader().getResource("SettingsWindow.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("SettingsWindow.fxml"));
+        root = loader.load();
+
+        // pass the directory service variables
+        SettingController settingController = loader.getController();
+        settingController.setDirectoryService(this.directoryService);
+
         Stage stage = new Stage();
 
         stage.initModality(Modality.WINDOW_MODAL);

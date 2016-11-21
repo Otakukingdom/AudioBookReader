@@ -9,7 +9,6 @@ import com.otakukingdom.audiobook.services.AudioBookScanService;
 import com.otakukingdom.audiobook.services.DatabaseService;
 import com.otakukingdom.audiobook.services.DirectoryService;
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,15 +21,15 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         // init services
         DirectoryService directoryService = new DirectoryService();
-        AudioBookScanService audioBookScanService = new AudioBookScanService(directoryService.getDirectories());
+        AudioBookScanService audioBookScanService = new AudioBookScanService(directoryService);
 
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = fxmlLoader.load(getClass().getClassLoader().getResource("MainWindow.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("MainWindow.fxml"));
+        Parent root = fxmlLoader.load();
 
         Scene scene = new Scene(root);
 
         MainController mainController = fxmlLoader.getController();
-        mainController.initialize();
+        System.out.println("MAIN CONTROLLER IS " + mainController.toString());
         mainController.setDirectoryService(directoryService);
         mainController.setAudioBookScanService(audioBookScanService);
 

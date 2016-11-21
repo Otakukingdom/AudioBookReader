@@ -21,6 +21,9 @@ public class Directory {
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date createdAt;
 
+    @DatabaseField(dataType = DataType.DATE_LONG)
+    private Date lastScanned;
+
     // ormlite requires a no-arg constructor
     public Directory() {
     }
@@ -29,6 +32,16 @@ public class Directory {
         this.fullPath = fullPath;
         this.createdAt = new Date();
     }
+
+    public void setLastScanned() {
+        this.lastScanned = new Date();
+    }
+
+    public Date getLastScanned() {
+        return this.lastScanned;
+    }
+
+    public Integer getId() { return this.id; }
 
     public String getFullPath() {
         return this.fullPath;

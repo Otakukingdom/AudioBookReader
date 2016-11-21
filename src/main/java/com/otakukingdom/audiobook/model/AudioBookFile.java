@@ -1,7 +1,11 @@
 package com.otakukingdom.audiobook.model;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.io.File;
+import java.util.Date;
 
 /**
  * Created by mistlight on 11/20/2016.
@@ -27,6 +31,9 @@ public class AudioBookFile {
     @DatabaseField
     private Integer completeness;
 
+    @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
+    private Date createdAt;
+
     public AudioBookFile() {
 
     }
@@ -36,5 +43,14 @@ public class AudioBookFile {
         this.fullPath = fullPath;
         this.position = 0;
         this.completeness = 0;
+        this.name = generateName(fullPath);
+        this.createdAt = new Date();
     }
+
+    public String generateName(String path) {
+        File file = new File(path);
+        return file.getName();
+    }
+
+    public Integer getId() { return this.id; }
 }

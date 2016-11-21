@@ -60,11 +60,9 @@ public class SettingController implements DirectoryObserver {
         currentSage.close();
     }
 
-    public void initialize() {
-        directoryService = new DirectoryService();
-        directoryService.addObserver(this);
-
-        directoryListUpdated();
+    public void setDirectoryService(DirectoryService directoryService) {
+        this.directoryService = directoryService;
+        this.directoryService.addObserver(this);
     }
 
     // Callback
