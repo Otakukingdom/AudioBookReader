@@ -181,8 +181,11 @@ public class AudioBookScanService implements DirectoryObserver {
     }
 
     public void directoryListUpdated() {
+        // update the directory list we have
+        this.directoryList = this.directoryService.getDirectories();
+
         // when directory list updates, we must rescan everything
-        scan();
+        this.scan();
     }
 
     private DirectoryService directoryService;

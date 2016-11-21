@@ -8,11 +8,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.otakukingdom.audiobook.controllers.MainController">
@@ -32,20 +29,16 @@
           </Menu>
         </menus>
       </MenuBar>
-      <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="95.0" minHeight="26.0" prefHeight="26.0" vgrow="NEVER" />
-          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="300.0" vgrow="ALWAYS" />
-        </rowConstraints>
+      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label text="Library" GridPane.halignment="CENTER" />
-            <ListView prefHeight="300.0" prefWidth="301.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <VBox prefHeight="326.0" prefWidth="280.0">
+               <children>
+                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Library" />
+                  <ListView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
          </children>
-      </GridPane>
+      </HBox>
       <Slider maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="NEVER" />
       <HBox prefHeight="14.0" prefWidth="545.0" VBox.vgrow="NEVER">
          <children>

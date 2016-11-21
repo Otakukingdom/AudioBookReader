@@ -28,6 +28,9 @@ public class AudioBook {
     @DatabaseField
     private Integer completeness;
 
+    @DatabaseField
+    private Integer defaultOrder;
+
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date createdAt;
 
