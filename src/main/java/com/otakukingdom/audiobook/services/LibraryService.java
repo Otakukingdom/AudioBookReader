@@ -49,7 +49,12 @@ public class LibraryService implements ScanObserver {
     }
 
     public void audioBookDirectoryScanned() {
-        // do something here...
+        try {
+            this.audioBookList = this.audioBookDao.queryBuilder().orderBy("defaultOrder", true).query();
+            setOrder();
+        } catch (SQLException e) {
+            // do nothing
+        }
     }
 
     private AudioBookScanService audioBookScanService;
