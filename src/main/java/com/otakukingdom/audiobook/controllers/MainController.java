@@ -1,10 +1,7 @@
 package com.otakukingdom.audiobook.controllers;
 
 import com.otakukingdom.audiobook.model.AudioBook;
-import com.otakukingdom.audiobook.services.AudioBookScanService;
-import com.otakukingdom.audiobook.services.DirectoryService;
-import com.otakukingdom.audiobook.services.LibraryService;
-import com.otakukingdom.audiobook.services.SettingService;
+import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -13,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,6 +27,7 @@ public class MainController {
 
     public void initialize() {
         this.settingService = new SettingService();
+        this.fileListService = new FileListService();
     }
 
     public void setDirectoryService(DirectoryService directoryService) {
@@ -83,6 +82,12 @@ public class MainController {
     }
 
     @FXML
+    public void handleLibrarySelectionUpdated(MouseEvent mouseEvent) {
+        MultipleSelectionModel<AudioBook> selectionModel = libraryListViewUI.getSelectionModel();
+        System.out.println(selectionModel.toString());
+    }
+
+    @FXML
     private VBox mainPane;
 
     @FXML
@@ -93,6 +98,7 @@ public class MainController {
     private AudioBookScanService audioBookScanService;
     private LibraryService libraryService;
     private DirectoryService directoryService;
+    private FileListService fileListService;
 
     private List<AudioBook> audioBookList;
 
