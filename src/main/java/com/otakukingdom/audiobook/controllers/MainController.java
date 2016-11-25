@@ -31,7 +31,10 @@ public class MainController implements FileListObserver {
     public void initialize() {
         this.settingService = new SettingService();
         this.fileListService = new FileListService();
+        this.mediaPlayerService = new MediaPlayerService();
+
         this.fileListService.addListener(this);
+        this.fileListService.addListener(mediaPlayerService);
 
         // ensures that the fileList service knows about the change
         this.libraryListViewUI.getSelectionModel().selectedItemProperty().addListener(fileListService);
@@ -95,7 +98,7 @@ public class MainController implements FileListObserver {
 
     @FXML
     public void handlePlayAction(ActionEvent event) {
-
+        this.mediaPlayerService.play();
     }
 
     @Override
@@ -123,6 +126,7 @@ public class MainController implements FileListObserver {
     private LibraryService libraryService;
     private DirectoryService directoryService;
     private FileListService fileListService;
+    private MediaPlayerService mediaPlayerService;
 
     private List<AudioBook> audioBookList;
 }
