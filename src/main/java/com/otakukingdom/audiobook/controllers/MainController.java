@@ -1,17 +1,18 @@
 package com.otakukingdom.audiobook.controllers;
 
 import com.otakukingdom.audiobook.model.AudioBook;
+import com.otakukingdom.audiobook.model.AudioBookFile;
+import com.otakukingdom.audiobook.observers.FileListObserver;
 import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,15 +25,18 @@ import java.util.List;
 /**
  * Created by mistlight on 11/20/2016.
  */
-public class MainController {
+public class MainController implements FileListObserver {
 
 
     public void initialize() {
         this.settingService = new SettingService();
         this.fileListService = new FileListService();
+        this.fileListService.addListener(this);
 
+        // ensures that the fileList service knows about the change
         this.libraryListViewUI.getSelectionModel().selectedItemProperty().addListener(fileListService);
     }
+
 
     public void setDirectoryService(DirectoryService directoryService) {
         this.directoryService = directoryService;
@@ -75,6 +79,7 @@ public class MainController {
         stage.show();
     }
 
+
     @FXML
     public void handleCloseAction(ActionEvent event) {
         Platform.exit();
@@ -85,15 +90,17 @@ public class MainController {
 
     }
 
-    @FXML
-    public void handleLibrarySelectionUpdated(MouseEvent mouseEvent) {
+    @Override
+    public void fileListUpdated(List<AudioBookFile> newFileList) {
+        System.out.println("This is called");
+        this.fileListUI.setItems(FXCollections.observableArrayList(newFileList));
     }
 
     @FXML
     private VBox mainPane;
 
     @FXML
-    private ListView fileListUI;
+    private ListView<AudioBookFile> fileListUI;
 
     @FXML
     private ListView<AudioBook> libraryListViewUI;
@@ -106,5 +113,4 @@ public class MainController {
     private FileListService fileListService;
 
     private List<AudioBook> audioBookList;
-
 }

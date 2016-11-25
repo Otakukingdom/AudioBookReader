@@ -62,5 +62,9 @@ public class AudioBookFile {
         return file.getName();
     }
 
+    public String toString() {
+        return this.name;
+    }
+
     public Integer getId() { return this.id; }
 }
