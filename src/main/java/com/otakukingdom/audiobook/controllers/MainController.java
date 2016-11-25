@@ -35,6 +35,14 @@ public class MainController implements FileListObserver {
 
         // ensures that the fileList service knows about the change
         this.libraryListViewUI.getSelectionModel().selectedItemProperty().addListener(fileListService);
+
+        // set the new audiobook file based on the filelist UI event
+        this.fileListUI.getSelectionModel().selectedItemProperty().
+                addListener(((observable, oldValue, newValue) -> {
+                    if(newValue != null) {
+                        fileListService.setSelectedAudioBookFile(newValue);
+                    }
+                }));
     }
 
 
