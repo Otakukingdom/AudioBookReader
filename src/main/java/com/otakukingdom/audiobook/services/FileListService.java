@@ -1,20 +1,23 @@
 package com.otakukingdom.audiobook.services;
 
 import com.otakukingdom.audiobook.model.AudioBook;
-import com.otakukingdom.audiobook.observers.LibraryObserver;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  * Created by mistlight on 11/24/2016.
  */
-public class FileListService implements LibraryObserver {
+public class FileListService implements ChangeListener<AudioBook>{
 
     public FileListService() {
 
     }
 
-    public void selectionUpdated(AudioBook newSelection) {
-        setSelectedAudiobook(newSelection);
+    @Override
+    public void changed(ObservableValue<? extends AudioBook> observable, AudioBook oldValue, AudioBook newValue) {
+        this.setSelectedAudiobook(newValue);
     }
+
 
     public void setSelectedAudiobook(AudioBook selectedAudiobook) {
         if(selectedAudiobook == null) {
@@ -36,5 +39,4 @@ public class FileListService implements LibraryObserver {
     }
 
     private AudioBook selectedAudiobook;
-
 }

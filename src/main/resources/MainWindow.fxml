@@ -37,7 +37,7 @@
                   <ListView fx:id="libraryListViewUI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#handleLibrarySelectionUpdated" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <ListView maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <ListView fx:id="fileListUI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <Slider maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="NEVER" />

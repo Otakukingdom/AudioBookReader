@@ -26,10 +26,16 @@ public class AudioBookFile {
     private String fullPath;
 
     @DatabaseField
+    private Integer lengthOfFile;
+
+    @DatabaseField
     private Integer position;
 
     @DatabaseField
     private Integer completeness;
+
+    @DatabaseField
+    private boolean fileExists;
 
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date createdAt;
@@ -45,6 +51,10 @@ public class AudioBookFile {
         this.completeness = 0;
         this.name = generateName(fullPath);
         this.createdAt = new Date();
+
+        // this always default to true unless something happens when we
+        // try to read the file
+        this.fileExists = true;
     }
 
     public String generateName(String path) {

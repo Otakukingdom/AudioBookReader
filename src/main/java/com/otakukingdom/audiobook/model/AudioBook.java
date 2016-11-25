@@ -31,6 +31,9 @@ public class AudioBook {
     @DatabaseField
     private Integer defaultOrder;
 
+    @DatabaseField
+    private Integer selectedFile;
+
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
     private Date createdAt;
 
@@ -46,6 +49,19 @@ public class AudioBook {
         this.completeness = 0;
         this.name = generateName(fullPath);
         this.createdAt = new Date();
+    }
+
+    public void setSelectedFile(int selectedFile) {
+        this.selectedFile = selectedFile;
+    }
+
+    public AudioBookFile getSelectedFile() {
+        if (this.selectedFile == null) {
+            return null;
+        }
+
+
+        return null;
     }
 
     public Integer getDefaultOrder() {
