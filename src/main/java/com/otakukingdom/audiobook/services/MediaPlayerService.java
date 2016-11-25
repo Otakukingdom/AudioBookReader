@@ -2,10 +2,12 @@ package com.otakukingdom.audiobook.services;
 
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.observers.FileListObserver;
+import com.otakukingdom.audiobook.observers.MediaPlayerObserver;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,47 +16,47 @@ import java.util.List;
 public class MediaPlayerService implements FileListObserver {
 
     public MediaPlayerService() {
+        this.listeners = new ArrayList<MediaPlayerObserver>();
     }
 
-    public void play() {
-        if (hasError) {
-            return;
-        }
-
-        if(mediaPlayer.getStatus() == MediaPlayer.Status.READY) {
-            this.mediaPlayer.play();
-        }
-    }
-
-    public void pause() {
-        if (hasError) {
-            return;
-        }
-
-        if(mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-            this.mediaPlayer.pause();
-        }
+    public MediaPlayer getMediaPlayer() {
+        return this.mediaPlayer;
     }
 
     public void setHasError(boolean error) {
         this.hasError = error;
     }
 
+    public void addListener(MediaPlayerObserver mediaPlayerObserver) {
+        this.listeners.add(mediaPlayerObserver);
+    }
+
     @Override
     public void fileListUpdated(List<AudioBookFile> newFileList) {
-        this.currentFile = null;
+        // do nothing
     }
 
     @Override
     public void selectedFileUpdated(AudioBookFile selectedFile) {
-        this.currentFile = selectedFile;
-        initMedia();
+        // only perform this IF and ONLY IF the selectedFile is different
+        if(this.currentFile == null ||
+                !this.currentFile.getId().equals(selectedFile.getId())) {
+            this.currentFile = selectedFile;
+            initMedia();
+            notifyListeners();
+        }
     }
 
     private void initMedia() {
+        // start from a clean slate
         setHasError(false);
 
         File file = new File(this.currentFile.getFullPath());
+
+        // dispose the previous media player if there is one..
+        if(this.mediaPlayer != null) {
+            this.mediaPlayer.dispose();
+        }
 
         try {
             this.media = new Media(file.toURI().toString());
@@ -90,8 +92,16 @@ public class MediaPlayerService implements FileListObserver {
         }
     }
 
+    private void notifyListeners() {
+        for(MediaPlayerObserver mediaPlayerObserver : listeners) {
+            mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer);
+        }
+    }
+
     private boolean hasError;
     private Media media;
     private MediaPlayer mediaPlayer;
     private AudioBookFile currentFile;
+
+    private List<MediaPlayerObserver> listeners;
 }

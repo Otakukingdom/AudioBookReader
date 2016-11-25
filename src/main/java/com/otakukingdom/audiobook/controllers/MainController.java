@@ -3,6 +3,7 @@ package com.otakukingdom.audiobook.controllers;
 import com.otakukingdom.audiobook.model.AudioBook;
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.observers.FileListObserver;
+import com.otakukingdom.audiobook.observers.MediaPlayerObserver;
 import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -33,6 +35,8 @@ public class MainController implements FileListObserver {
         this.fileListService = new FileListService();
         this.mediaPlayerService = new MediaPlayerService();
 
+
+
         this.fileListService.addListener(this);
         this.fileListService.addListener(mediaPlayerService);
 
@@ -46,6 +50,8 @@ public class MainController implements FileListObserver {
                         fileListService.setSelectedAudioBookFile(newValue);
                     }
                 }));
+
+        setMediaPlayerListener();
     }
 
 
@@ -98,7 +104,9 @@ public class MainController implements FileListObserver {
 
     @FXML
     public void handlePlayAction(ActionEvent event) {
-        this.mediaPlayerService.play();
+        if(this.mediaPlayer != null) {
+            mediaPlayer.play();
+        }
     }
 
     @Override
@@ -111,6 +119,34 @@ public class MainController implements FileListObserver {
         this.fileListUI.getSelectionModel().select(selectedFile);
     }
 
+    private void setMediaPlayerListener() {
+        this.mediaPlayerService.addListener((MediaPlayer mediaPlayer) -> {
+            this.mediaPlayer = mediaPlayer;
+
+            if (this.mediaPlayer == null) {
+                // return early if there is nothing
+                resetMediaUI();
+                return;
+            }
+
+            this.mediaPlayer.onPlayingProperty().addListener(((observable, oldValue, newValue) -> {
+                System.out.println("playing ...");
+            }));
+
+            this.mediaPlayer.currentTimeProperty().addListener(((observable, oldValue, newValue) -> {
+                System.out.println("Current Time: " + newValue.toString());
+            }));
+
+            this.mediaPlayer.onErrorProperty().addListener((r) -> {
+
+            });
+        });
+    }
+
+    private void resetMediaUI() {
+        // steps for resetting the media UI
+    }
+
     @FXML
     private VBox mainPane;
 
@@ -120,6 +156,19 @@ public class MainController implements FileListObserver {
     @FXML
     private ListView<AudioBook> libraryListViewUI;
 
+
+    @FXML
+    private Label mediaDuration;
+
+    @FXML
+    private Slider mediaSlider;
+
+    @FXML
+    private Slider volumeSlider;
+
+
+    // media related UI elements
+
     // non FXML instance vars
     private SettingService settingService;
     private AudioBookScanService audioBookScanService;
@@ -128,5 +177,8 @@ public class MainController implements FileListObserver {
     private FileListService fileListService;
     private MediaPlayerService mediaPlayerService;
 
+    private MediaPlayer mediaPlayer;
+
     private List<AudioBook> audioBookList;
+
 }

@@ -40,12 +40,17 @@
             <ListView fx:id="fileListUI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <Slider maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="NEVER" />
+      <HBox>
+         <children>
+            <Label fx:id="mediaDuration" text="--:--:--" />
+            <Slider fx:id="mediaSlider" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
       <HBox prefHeight="14.0" prefWidth="545.0" VBox.vgrow="NEVER">
          <children>
             <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#handlePlayAction" text="Play" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Slider />
+            <Slider fx:id="volumeSlider" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
