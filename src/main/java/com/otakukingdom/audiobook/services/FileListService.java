@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableValue;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by mistlight on 11/24/2016.
@@ -46,7 +47,7 @@ public class FileListService implements ChangeListener<AudioBook>{
             return;
         }
 
-        if(this.selectedAudiobook.getId() != selectedAudiobook.getId()) {
+        if(!this.selectedAudiobook.getId().equals(selectedAudiobook.getId())) {
             this.selectedAudiobook = selectedAudiobook;
         }
     }
@@ -104,10 +105,17 @@ public class FileListService implements ChangeListener<AudioBook>{
         // check if we have a selected audiobook file
         Integer selectedAudioBookFileId = this.selectedAudiobook.getSelectedFile();
         if(selectedAudioBookFile != null) {
-            Optional<AudioBookFile> selectedFile =
-                    this.fileList.stream().filter(f -> f.getId() == selectedAudioBookFileId).findFirst();
-            if(selectedFile.isPresent()) {
-                setSelectedAudioBookFile(selectedFile.get(), true);
+            AudioBookFile foundFile = null;
+
+            for(AudioBookFile currentFile : this.fileList) {
+                if(currentFile.getId().equals(selectedAudioBookFileId)) {
+                    foundFile = currentFile;
+                    break;
+                }
+            }
+
+            if(foundFile != null) {
+                setSelectedAudioBookFile(foundFile, true);
                 return;
             }
         }
