@@ -92,7 +92,6 @@ public class MainController implements FileListObserver {
 
     @Override
     public void fileListUpdated(List<AudioBookFile> newFileList) {
-        System.out.println("This is called");
         this.fileListUI.setItems(FXCollections.observableArrayList(newFileList));
     }
 

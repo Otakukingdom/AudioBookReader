@@ -10,6 +10,8 @@ import javafx.beans.value.ObservableValue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -48,6 +50,23 @@ public class FileListService implements ChangeListener<AudioBook>{
         }
     }
 
+    // check if the audio book files has been sorted
+    // we check this by checking the indices of the AudioBookFile
+    private boolean isSorted() {
+        for(AudioBookFile audioBookFile : this.fileList) {
+            if(audioBookFile.getPosition() <= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void sortList() {
+        Collections.sort(this.fileList, Comparator.comparing(AudioBookFile::getFullPath));
+
+        writeSortedList();
+    }
+
     private void notifyListeners() {
         for(FileListObserver listener : listeners) {
             listener.fileListUpdated(this.fileList);
@@ -63,6 +82,24 @@ public class FileListService implements ChangeListener<AudioBook>{
                     where().
                     eq("audioBookId", this.selectedAudiobook.getId()).
                     query();
+
+            if(!this.isSorted()) {
+                sortList();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeSortedList() {
+        try {
+            Dao<AudioBookFile, Integer> fileDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
+
+            for(int i = 0; i < this.fileList.size(); i++ ) {
+                this.fileList.get(i).setPosition(i + 1);
+
+                fileDao.update(this.fileList.get(i));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

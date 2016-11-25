@@ -47,7 +47,7 @@ public class AudioBookFile {
     public AudioBookFile(Integer audiobookId, String fullPath) {
         this.audiobookId = audiobookId;
         this.fullPath = fullPath;
-        this.position = 0;
+        this.position = -1;
         this.completeness = 0;
         this.name = generateName(fullPath);
         this.createdAt = new Date();
@@ -55,6 +55,18 @@ public class AudioBookFile {
         // this always default to true unless something happens when we
         // try to read the file
         this.fileExists = true;
+    }
+
+    public String getFullPath() {
+        return this.fullPath;
+    }
+
+    public Integer getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public String generateName(String path) {
