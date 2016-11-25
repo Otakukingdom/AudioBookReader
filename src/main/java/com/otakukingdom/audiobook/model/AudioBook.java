@@ -55,13 +55,8 @@ public class AudioBook {
         this.selectedFile = selectedFile;
     }
 
-    public AudioBookFile getSelectedFile() {
-        if (this.selectedFile == null) {
-            return null;
-        }
-
-
-        return null;
+    public Integer getSelectedFile() {
+        return this.selectedFile;
     }
 
     public Integer getDefaultOrder() {

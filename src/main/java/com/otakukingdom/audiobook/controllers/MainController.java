@@ -95,6 +95,11 @@ public class MainController implements FileListObserver {
         this.fileListUI.setItems(FXCollections.observableArrayList(newFileList));
     }
 
+    @Override
+    public void selectedFileUpdated(AudioBookFile selectedFile) {
+        this.fileListUI.getSelectionModel().select(selectedFile);
+    }
+
     @FXML
     private VBox mainPane;
 

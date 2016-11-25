@@ -9,10 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by mistlight on 11/24/2016.
@@ -32,7 +29,7 @@ public class FileListService implements ChangeListener<AudioBook>{
     public void changed(ObservableValue<? extends AudioBook> observable, AudioBook oldValue, AudioBook newValue) {
         this.setSelectedAudiobook(newValue);
         updateList();
-        notifyListeners();
+        notifyFileListChanged();
     }
 
     public void setSelectedAudiobook(AudioBook selectedAudiobook) {
@@ -67,9 +64,15 @@ public class FileListService implements ChangeListener<AudioBook>{
         writeSortedList();
     }
 
-    private void notifyListeners() {
-        for(FileListObserver listener : listeners) {
+    private void notifyFileListChanged() {
+        for(FileListObserver listener : this.listeners) {
             listener.fileListUpdated(this.fileList);
+        }
+    }
+
+    private void notifySelectedFileChanged() {
+        for(FileListObserver listener : this.listeners) {
+            listener.selectedFileUpdated(this.selectedAudioBookFile);
         }
     }
 
@@ -86,9 +89,49 @@ public class FileListService implements ChangeListener<AudioBook>{
             if(!this.isSorted()) {
                 sortList();
             }
+            
+            updateSelectedAudiobookFile();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateSelectedAudiobookFile() {
+        // check if we have a selected audiobook file
+        Integer selectedAudioBookFileId = this.selectedAudiobook.getSelectedFile();
+        if(selectedAudioBookFile != null) {
+            Optional<AudioBookFile> selectedFile =
+                    this.fileList.stream().filter(f -> f.getId() == selectedAudioBookFileId).findFirst();
+            if(selectedFile.isPresent()) {
+                setSelectedAudioBookFile(selectedFile.get(), true);
+                return;
+            }
+        }
+
+        // if we are here it means we don't have a selected file for whatever reason, we simply pick the
+        // first one
+        AudioBookFile firstFile = this.fileList.get(0);
+        setSelectedAudioBookFile(firstFile, false);
+    }
+
+    private void setSelectedAudioBookFile(AudioBookFile audioBookFile, boolean writeToDb) {
+        // set the new audiobook file to be the currently selected audiobook file
+        this.selectedAudioBookFile = audioBookFile;
+        this.selectedAudiobook.setSelectedFile(audioBookFile.getId());
+
+        // update the audiobook db entry with the new selected file if writeToDb is true
+        if (writeToDb) {
+            try {
+                Dao<AudioBook, Integer> abDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBook.class);
+                abDao.update(this.selectedAudiobook);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        // notify the observers
+        notifySelectedFileChanged();
     }
 
     private void writeSortedList() {
@@ -111,5 +154,6 @@ public class FileListService implements ChangeListener<AudioBook>{
 
     private List<AudioBookFile> fileList;
     private AudioBook selectedAudiobook;
+    private AudioBookFile selectedAudioBookFile;
     private List<FileListObserver> listeners;
 }
