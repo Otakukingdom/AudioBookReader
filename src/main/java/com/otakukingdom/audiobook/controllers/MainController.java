@@ -32,7 +32,7 @@ public class MainController implements FileListObserver {
     public void initialize() {
         this.settingService = SettingService.getInstance();
         this.fileListService = new FileListService();
-        this.mediaPlayerService = new MediaPlayerService();
+        this.mediaPlayerService = new MediaPlayerService(this.fileListService);
 
 
 
@@ -58,6 +58,7 @@ public class MainController implements FileListObserver {
                 double currentTime = this.mediaPlayer.getCurrentTime().toSeconds();
                 if(Math.abs(currentTime - newValue.doubleValue()) > min) {
                     this.mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+                    this.mediaPlayerService.saveState();
                 }
             }
         }));
@@ -174,6 +175,17 @@ public class MainController implements FileListObserver {
 
             this.mediaPlayer.setOnReady(() -> {
                 mediaSlider.setMax(this.mediaPlayer.getTotalDuration().toSeconds());
+
+                // update slider position
+                if(!mediaSlider.isValueChanging()) {
+                    AudioBookFile currentFile = this.mediaPlayerService.getCurrentFile();
+                    mediaPlayer.seek(Duration.seconds(currentFile.getSeekPosition()));
+                    mediaSlider.setValue(currentFile.getSeekPosition());
+
+                    // update the label
+                    long seconds = currentFile.getSeekPosition().longValue();
+                    setDurationLabel(seconds);
+                }
             });
 
             this.mediaPlayer.setOnPlaying(()-> {
@@ -182,6 +194,7 @@ public class MainController implements FileListObserver {
 
             this.mediaPlayer.setOnPaused(() -> {
                 playButton.setText("Play");
+                this.mediaPlayerService.saveState();
             });
 
             this.mediaPlayer.setOnEndOfMedia(() -> {
@@ -197,6 +210,7 @@ public class MainController implements FileListObserver {
                 if(!mediaSlider.isValueChanging()) {
                     mediaSlider.setValue(newValue.toSeconds());
                 }
+
             }));
 
             this.mediaPlayer.setVolume(settingService.getVolume());

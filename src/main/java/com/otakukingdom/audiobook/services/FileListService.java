@@ -37,6 +37,19 @@ public class FileListService implements ChangeListener<AudioBook>{
         this.setSelectedAudioBookFile(selectedAudiobook, true);
     }
 
+    public void updateWithNew() {
+        try {
+            Dao<AudioBookFile, Integer> fileDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
+            for(int i = 0; i < this.fileList.size(); i++) {
+                AudioBookFile updated = fileDao.queryForSameId(this.fileList.get(i));
+                this.fileList.set(i, updated);
+            }
+            notifyFileListChanged();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setSelectedAudiobook(AudioBook selectedAudiobook) {
         if(selectedAudiobook == null) {
             return;

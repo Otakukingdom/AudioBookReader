@@ -78,6 +78,14 @@ public class AudioBookFile {
         return file.getName();
     }
 
+    public Integer getCompleteness() {
+        return this.completeness;
+    }
+
+    public void setCompleteness(Integer completeness) {
+        this.completeness = completeness;
+    }
+
     public void setSeekPosition(Double seekPosition) {
         this.seekPosition = seekPosition;
     }
@@ -87,17 +95,18 @@ public class AudioBookFile {
     }
 
     public String toString() {
-        return this.name;
+        String name = "(" + this.completeness + "% Completed) " + this.name;
+        return name;
     }
 
     public Integer getId() { return this.id; }
 
     public String getState() {
-        if (this.completeness == 100) {
+        if (this.completeness.intValue() == 100) {
             return "Completed";
         }
 
-        if (this.completeness > 0) {
+        if (this.completeness.intValue() > 0) {
             return "Started";
         } else {
             return "Unstarted";
