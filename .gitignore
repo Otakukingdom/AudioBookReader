@@ -15,5 +15,6 @@
 log/
 target/
 
+*.ini
 *.db
 *.db-journal
