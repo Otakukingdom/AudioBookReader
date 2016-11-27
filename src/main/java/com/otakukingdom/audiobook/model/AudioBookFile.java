@@ -91,4 +91,16 @@ public class AudioBookFile {
     }
 
     public Integer getId() { return this.id; }
+
+    public String getState() {
+        if (this.completeness == 100) {
+            return "Completed";
+        }
+
+        if (this.completeness > 0) {
+            return "Started";
+        } else {
+            return "Unstarted";
+        }
+    }
 }

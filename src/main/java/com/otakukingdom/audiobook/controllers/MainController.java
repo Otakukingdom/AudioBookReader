@@ -30,7 +30,7 @@ public class MainController implements FileListObserver {
 
 
     public void initialize() {
-        this.settingService = new SettingService();
+        this.settingService = SettingService.getInstance();
         this.fileListService = new FileListService();
         this.mediaPlayerService = new MediaPlayerService();
 
@@ -88,6 +88,12 @@ public class MainController implements FileListObserver {
         }
 
         libraryListViewUI.setItems(FXCollections.<AudioBook>observableArrayList(this.audioBookList));
+
+        // update on a rescan
+        this.audioBookScanService.addObserver(() -> {
+            this.audioBookList = this.libraryService.getAudioBookList();
+            libraryListViewUI.setItems(FXCollections.<AudioBook>observableArrayList(this.audioBookList));
+        });
     }
 
     @FXML
