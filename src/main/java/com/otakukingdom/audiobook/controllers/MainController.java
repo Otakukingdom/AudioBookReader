@@ -51,6 +51,7 @@ public class MainController implements FileListObserver {
                 }));
 
 
+        // set the media position based on the slider change
         this.mediaSlider.valueProperty().addListener(((observable, oldValue, newValue) -> {
             double min = 0.5;
             if(!this.mediaSlider.isValueChanging()) {
@@ -64,6 +65,20 @@ public class MainController implements FileListObserver {
         this.mediaSlider.valueChangingProperty().addListener(((observable, wasChanging, isChanging) -> {
             if(!isChanging) {
                 this.mediaPlayer.seek(Duration.seconds(this.mediaSlider.getValue()));
+            }
+        }));
+
+        // set the volume based on settings
+        this.volumeSlider.setValue(this.settingService.getVolume());
+
+        // update the volume setting when the slider changes
+        this.volumeSlider.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            // update the volume for the settings service
+            this.settingService.setVolume((double) newValue);
+
+            // update the volume for the current media player, if it exists
+            if(this.mediaPlayer != null) {
+                this.mediaPlayer.setVolume((double) newValue);
             }
         }));
 
@@ -183,6 +198,8 @@ public class MainController implements FileListObserver {
                     mediaSlider.setValue(newValue.toSeconds());
                 }
             }));
+
+            this.mediaPlayer.setVolume(settingService.getVolume());
         });
     }
 

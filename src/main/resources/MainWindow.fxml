@@ -50,7 +50,7 @@
          <children>
             <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#handlePlayAction" text="Play" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Slider fx:id="volumeSlider" />
+            <Slider fx:id="volumeSlider" max="1.0" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

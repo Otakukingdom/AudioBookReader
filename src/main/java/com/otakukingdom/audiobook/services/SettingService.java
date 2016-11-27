@@ -38,6 +38,8 @@ public class SettingService {
 
     public void setVolume(double volume) {
         this.ini.put("main", "volume", volume);
+
+        save();
     }
 
     public void save() {
@@ -62,7 +64,7 @@ public class SettingService {
     private void setDefaultValues() {
         String volumeString = ini.get("main", "volume", String.class);
         if(volumeString == null) {
-            ini.put("main", "volume", 100.0);
+            ini.put("main", "volume", 1);
         }
     }
 
