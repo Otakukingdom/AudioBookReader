@@ -92,6 +92,12 @@ public class MediaPlayerService implements FileListObserver {
         }
     }
 
+    // save the current media playing state to the db
+    public void saveState() {
+
+    }
+
+
     private void notifyListeners() {
         for(MediaPlayerObserver mediaPlayerObserver : listeners) {
             mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer);

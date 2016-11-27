@@ -7,11 +7,13 @@ import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
@@ -50,8 +52,21 @@ public class MainController implements FileListObserver {
                     }
                 }));
 
-        // when media slider seeker position changes
+
         this.mediaSlider.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            double min = 0.5;
+            if(!this.mediaSlider.isValueChanging()) {
+                double currentTime = this.mediaPlayer.getCurrentTime().toSeconds();
+                if(Math.abs(currentTime - newValue.doubleValue()) > min) {
+                    this.mediaPlayer.seek(Duration.seconds(newValue.doubleValue()));
+                }
+            }
+        }));
+
+        this.mediaSlider.valueChangingProperty().addListener(((observable, wasChanging, isChanging) -> {
+            if(!isChanging) {
+                this.mediaPlayer.seek(Duration.seconds(this.mediaSlider.getValue()));
+            }
         }));
 
         setMediaPlayerListener();
@@ -138,6 +153,10 @@ public class MainController implements FileListObserver {
             // since we changed the media player, we should reset the UI
             resetMediaUI();
 
+            this.mediaPlayer.setOnReady(() -> {
+                mediaSlider.setMax(this.mediaPlayer.getTotalDuration().toSeconds());
+            });
+
             this.mediaPlayer.setOnPlaying(()-> {
                 playButton.setText("Pause");
             });
@@ -156,9 +175,9 @@ public class MainController implements FileListObserver {
                 setDurationLabel(seconds);
 
                 // update slider position
-                Duration totalDuration = this.mediaPlayer.getTotalDuration();
-                double position = newValue.toSeconds() / totalDuration.toSeconds();
-                mediaSlider.setValue(position);
+                if(!mediaSlider.isValueChanging()) {
+                    mediaSlider.setValue(newValue.toSeconds());
+                }
             }));
         });
     }
