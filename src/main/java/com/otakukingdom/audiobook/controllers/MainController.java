@@ -6,6 +6,7 @@ import com.otakukingdom.audiobook.observers.FileListObserver;
 import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -152,8 +153,8 @@ public class MainController implements FileListObserver {
     }
 
     @Override
-    public void fileListUpdated(List<AudioBookFile> newFileList) {
-        this.fileListUI.setItems(FXCollections.observableArrayList(newFileList));
+    public void fileListUpdated(ObservableList<AudioBookFile> newFileList) {
+        this.fileListUI.setItems(newFileList);
     }
 
     @Override
@@ -198,6 +199,9 @@ public class MainController implements FileListObserver {
             });
 
             this.mediaPlayer.setOnEndOfMedia(() -> {
+                if(this.fileListService.nextFile() != null) {
+                    this.fileListService.setNextFile();
+                }
             });
 
             this.mediaPlayer.currentTimeProperty().addListener(((observable, oldValue, newValue) -> {

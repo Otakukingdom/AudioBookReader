@@ -7,6 +7,8 @@ import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.observers.FileListObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 public class FileListService implements ChangeListener<AudioBook>{
 
     public FileListService() {
-        this.fileList = new ArrayList<AudioBookFile>();
+        this.fileList = FXCollections.observableList(new ArrayList<AudioBookFile>());
         this.listeners = new ArrayList<FileListObserver>();
     }
 
@@ -33,20 +35,35 @@ public class FileListService implements ChangeListener<AudioBook>{
         notifyFileListChanged();
     }
 
+    // based on the current selected file, return the next audio book file in sequence
+    public AudioBookFile nextFile() {
+        int currentIndex = this.fileList.indexOf(this.selectedAudioBookFile);
+        if(currentIndex + 1 < this.fileList.size()) {
+            return this.fileList.get(currentIndex + 1);
+        }
+
+        return null;
+    }
+
+    public void setNextFile() {
+        if(nextFile() != null) {
+            setSelectedAudioBookFile(nextFile());
+        }
+    }
+
     public void setSelectedAudioBookFile(AudioBookFile selectedAudiobook) {
         this.setSelectedAudioBookFile(selectedAudiobook, true);
     }
 
-    public void updateWithNew() {
-        try {
-            Dao<AudioBookFile, Integer> fileDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
-            for(int i = 0; i < this.fileList.size(); i++) {
-                AudioBookFile updated = fileDao.queryForSameId(this.fileList.get(i));
-                this.fileList.set(i, updated);
+    public void updateCompletionStatus(AudioBookFile currentFile, double durationSeconds, Integer completeness) {
+        for(AudioBookFile file : this.fileList) {
+            if(file.getId().equals(currentFile.getId())) {
+                file.setSeekPosition(durationSeconds);
+
+                if(completeness != null) {
+                    file.setCompleteness(completeness);
+                }
             }
-            notifyFileListChanged();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -97,12 +114,12 @@ public class FileListService implements ChangeListener<AudioBook>{
     private void updateList() {
         try {
             Dao<AudioBookFile, Integer> fileDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
-            this.fileList = fileDao.
+            this.fileList = FXCollections.observableArrayList(fileDao.
                     queryBuilder().
                     orderBy("position", true).
                     where().
                     eq("audioBookId", this.selectedAudiobook.getId()).
-                    query();
+                    query());
 
             if(!this.isSorted()) {
                 sortList();
@@ -177,8 +194,9 @@ public class FileListService implements ChangeListener<AudioBook>{
         return this.selectedAudiobook;
     }
 
-    private List<AudioBookFile> fileList;
+    private ObservableList<AudioBookFile> fileList;
     private AudioBook selectedAudiobook;
     private AudioBookFile selectedAudioBookFile;
     private List<FileListObserver> listeners;
+
 }

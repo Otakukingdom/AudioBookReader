@@ -1,6 +1,7 @@
 package com.otakukingdom.audiobook.observers;
 
 import com.otakukingdom.audiobook.model.AudioBookFile;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface FileListObserver {
 
-    public void fileListUpdated(List<AudioBookFile> newFileList);
+    public void fileListUpdated(ObservableList<AudioBookFile> newFileList);
 
     public void selectedFileUpdated(AudioBookFile selectedFile);
 }

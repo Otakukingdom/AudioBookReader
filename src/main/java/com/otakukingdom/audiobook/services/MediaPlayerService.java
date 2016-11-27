@@ -5,6 +5,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.observers.FileListObserver;
 import com.otakukingdom.audiobook.observers.MediaPlayerObserver;
+import javafx.collections.ObservableList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -37,7 +38,7 @@ public class MediaPlayerService implements FileListObserver {
     }
 
     @Override
-    public void fileListUpdated(List<AudioBookFile> newFileList) {
+    public void fileListUpdated(ObservableList<AudioBookFile> newFileList) {
         // do nothing
     }
 
@@ -115,8 +116,9 @@ public class MediaPlayerService implements FileListObserver {
 
         currentFile.setSeekPosition(durationSeconds);
 
+        Integer completeness = null;
         if(this.mediaPlayer.getTotalDuration() != null) {
-            int completeness = (int) ((durationSeconds / this.mediaPlayer.getTotalDuration().toSeconds()) * 100);
+            completeness = (int) ((durationSeconds / this.mediaPlayer.getTotalDuration().toSeconds()) * 100);
             if(completeness >= currentFile.getCompleteness()) {
                 currentFile.setCompleteness(completeness);
             }
@@ -126,7 +128,7 @@ public class MediaPlayerService implements FileListObserver {
             Dao<AudioBookFile, Integer> dao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
             dao.update(this.currentFile);
 
-            this.fileListService.updateWithNew();
+            this.fileListService.updateCompletionStatus(this.currentFile, durationSeconds, completeness);
         } catch (SQLException e) {
             e.printStackTrace();
         }
