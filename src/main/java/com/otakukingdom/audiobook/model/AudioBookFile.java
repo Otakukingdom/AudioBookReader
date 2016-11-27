@@ -35,6 +35,9 @@ public class AudioBookFile {
     private Integer completeness;
 
     @DatabaseField
+    private Double seekPosition;
+
+    @DatabaseField
     private boolean fileExists;
 
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = false)
@@ -51,6 +54,7 @@ public class AudioBookFile {
         this.completeness = 0;
         this.name = generateName(fullPath);
         this.createdAt = new Date();
+        this.seekPosition = 0.0;
 
         // this always default to true unless something happens when we
         // try to read the file
@@ -72,6 +76,14 @@ public class AudioBookFile {
     public String generateName(String path) {
         File file = new File(path);
         return file.getName();
+    }
+
+    public void setSeekPosition(Double seekPosition) {
+        this.seekPosition = seekPosition;
+    }
+
+    public Double getSeekPosition() {
+        return this.seekPosition;
     }
 
     public String toString() {

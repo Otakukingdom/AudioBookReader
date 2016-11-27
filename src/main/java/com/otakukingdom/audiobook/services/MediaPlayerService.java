@@ -38,6 +38,7 @@ public class MediaPlayerService implements FileListObserver {
 
     @Override
     public void selectedFileUpdated(AudioBookFile selectedFile) {
+
         // only perform this IF and ONLY IF the selectedFile is different
         if(this.currentFile == null ||
                 !this.currentFile.getId().equals(selectedFile.getId())) {
@@ -94,7 +95,6 @@ public class MediaPlayerService implements FileListObserver {
 
     // save the current media playing state to the db
     public void saveState() {
-
     }
 
 
