@@ -3,11 +3,9 @@ package com.otakukingdom.audiobook.controllers;
 import com.otakukingdom.audiobook.model.AudioBook;
 import com.otakukingdom.audiobook.model.AudioBookFile;
 import com.otakukingdom.audiobook.observers.FileListObserver;
-import com.otakukingdom.audiobook.observers.MediaPlayerObserver;
 import com.otakukingdom.audiobook.services.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -50,6 +49,10 @@ public class MainController implements FileListObserver {
                         fileListService.setSelectedAudioBookFile(newValue);
                     }
                 }));
+
+        // when media slider seeker position changes
+        this.mediaSlider.valueProperty().addListener(((observable, oldValue, newValue) -> {
+        }));
 
         setMediaPlayerListener();
     }
@@ -105,7 +108,11 @@ public class MainController implements FileListObserver {
     @FXML
     public void handlePlayAction(ActionEvent event) {
         if(this.mediaPlayer != null) {
-            mediaPlayer.play();
+            if(!mediaPlayer.statusProperty().get().equals(MediaPlayer.Status.PLAYING)) {
+                mediaPlayer.play();
+            } else {
+                mediaPlayer.pause();
+            }
         }
     }
 
@@ -129,23 +136,42 @@ public class MainController implements FileListObserver {
                 return;
             }
 
-            this.mediaPlayer.onPlayingProperty().addListener(((observable, oldValue, newValue) -> {
-                System.out.println("playing ...");
-            }));
+            this.mediaPlayer.setOnPlaying(()-> {
+                playButton.setText("Pause");
+            });
 
-            this.mediaPlayer.currentTimeProperty().addListener(((observable, oldValue, newValue) -> {
-                System.out.println("Current Time: " + newValue.toString());
-            }));
+            this.mediaPlayer.setOnPaused(() -> {
+                playButton.setText("Play");
+            });
 
-            this.mediaPlayer.onErrorProperty().addListener((r) -> {
+            this.mediaPlayer.setOnEndOfMedia(() -> {
 
             });
+
+            this.mediaPlayer.currentTimeProperty().addListener(((observable, oldValue, newValue) -> {
+
+                // update the label
+                long seconds = (long) newValue.toSeconds();
+                String label = String.format("%d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, (seconds % 60));
+
+                mediaDuration.setText(label);
+
+                // update slider position
+                Duration totalDuration = this.mediaPlayer.getTotalDuration();
+                double position = newValue.toSeconds() / totalDuration.toSeconds();
+                mediaSlider.setValue(position);
+            }));
         });
     }
 
     private void resetMediaUI() {
         // steps for resetting the media UI
+        playButton.setText("Play");
+        mediaSlider.setValue(0);
     }
+
+    @FXML
+    private Button playButton;
 
     @FXML
     private VBox mainPane;
