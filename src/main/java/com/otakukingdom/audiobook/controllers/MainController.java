@@ -132,9 +132,11 @@ public class MainController implements FileListObserver {
 
             if (this.mediaPlayer == null) {
                 // return early if there is nothing
-                resetMediaUI();
                 return;
             }
+
+            // since we changed the media player, we should reset the UI
+            resetMediaUI();
 
             this.mediaPlayer.setOnPlaying(()-> {
                 playButton.setText("Pause");
@@ -145,16 +147,13 @@ public class MainController implements FileListObserver {
             });
 
             this.mediaPlayer.setOnEndOfMedia(() -> {
-
             });
 
             this.mediaPlayer.currentTimeProperty().addListener(((observable, oldValue, newValue) -> {
 
                 // update the label
                 long seconds = (long) newValue.toSeconds();
-                String label = String.format("%d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, (seconds % 60));
-
-                mediaDuration.setText(label);
+                setDurationLabel(seconds);
 
                 // update slider position
                 Duration totalDuration = this.mediaPlayer.getTotalDuration();
@@ -168,6 +167,12 @@ public class MainController implements FileListObserver {
         // steps for resetting the media UI
         playButton.setText("Play");
         mediaSlider.setValue(0);
+        setDurationLabel(0);
+    }
+
+    private void setDurationLabel(long seconds) {
+        String label = String.format("%d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, (seconds % 60));
+        mediaDuration.setText(label);
     }
 
     @FXML
