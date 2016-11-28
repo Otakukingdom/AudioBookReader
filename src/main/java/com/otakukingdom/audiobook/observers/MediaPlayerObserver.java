@@ -8,6 +8,6 @@ import javafx.scene.media.MediaPlayer;
 @FunctionalInterface
 public interface MediaPlayerObserver {
 
-    public void mediaPlayerUpdated(MediaPlayer mediaPlayer, boolean autoplay);
+    public void mediaPlayerUpdated(MediaPlayer mediaPlayer);
 
 }

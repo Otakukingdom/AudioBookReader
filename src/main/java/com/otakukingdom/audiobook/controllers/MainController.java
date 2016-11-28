@@ -31,13 +31,19 @@ public class MainController implements FileListObserver {
 
 
     public void initialize() {
+        // we need this flag so slider to seek functionality doesn't enable during startup
+        // when the mediaplayer hasn't initialized yet
         this.sliderToSeekEnabled = false;
+        this.nextFileCalled = false;
+
+
+        // initialize the various services we need
         this.settingService = SettingService.getInstance();
         this.fileListService = new FileListService();
         this.mediaPlayerService = new MediaPlayerService(this.fileListService);
 
 
-
+        // bind the file list service to this controller as well as the media player service
         this.fileListService.addListener(this);
         this.fileListService.addListener(mediaPlayerService);
 
@@ -169,13 +175,21 @@ public class MainController implements FileListObserver {
     }
 
     private void setMediaPlayerListener() {
-        this.mediaPlayerService.addListener((MediaPlayer mediaPlayer, boolean autoplay) -> {
+        this.mediaPlayerService.addListener((MediaPlayer mediaPlayer) -> {
             this.sliderToSeekEnabled = false;
             this.mediaPlayer = mediaPlayer;
 
             if (this.mediaPlayer == null) {
                 // return early if there is nothing
                 return;
+            }
+
+            if(this.nextFileCalled) {
+                // set autoplay status if nextfile was called
+                this.mediaPlayer.setAutoPlay(true);
+
+                // reset this flag
+                this.nextFileCalled = false;
             }
 
             // since we changed the media player, we should reset the UI
@@ -208,6 +222,7 @@ public class MainController implements FileListObserver {
             this.mediaPlayer.setOnEndOfMedia(() -> {
                 if(this.fileListService.nextFile() != null) {
                     this.fileListService.setNextFile();
+                    this.nextFileCalled = true;
                 }
             });
 
@@ -280,5 +295,7 @@ public class MainController implements FileListObserver {
 
     private List<AudioBook> audioBookList;
 
+    // media player flags
     private boolean sliderToSeekEnabled;
+    private boolean nextFileCalled;
 }

@@ -136,7 +136,7 @@ public class MediaPlayerService implements FileListObserver {
 
     private void notifyListeners(boolean autoplay) {
         for(MediaPlayerObserver mediaPlayerObserver : listeners) {
-            mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer, autoplay);
+            mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer);
         }
     }
 
