@@ -28,6 +28,7 @@ import java.util.List;
  * Created by mistlight on 11/20/2016.
  */
 public class MainController implements FileListObserver {
+    private static double EPSILON = 1.0;
 
 
     public void initialize() {
@@ -187,10 +188,8 @@ public class MainController implements FileListObserver {
             if(this.nextFileCalled) {
                 // set autoplay status if nextfile was called
                 this.mediaPlayer.setAutoPlay(true);
-
-                // reset this flag
-                this.nextFileCalled = false;
             }
+
 
             // since we changed the media player, we should reset the UI
             resetMediaUI();
@@ -207,7 +206,27 @@ public class MainController implements FileListObserver {
                 long seconds = currentFile.getSeekPosition().longValue();
                 setDurationLabel(seconds);
 
+                // enable the slider to seek functionality so we can use the slider to change
+                // the seek position
                 sliderToSeekEnabled = true;
+
+                // if the next file was called previous (which will set the autoplay), check
+                // if we need to skip this file as well
+                if(this.nextFileCalled) {
+                    // reset this flag
+                    this.nextFileCalled = false;
+
+                    // check if we are in a file that is already near the end, we should skip this file entirely
+                    double diff = mediaPlayer.getTotalDuration().toSeconds() - currentFile.getSeekPosition();
+                    if(mediaPlayer.getTotalDuration().toSeconds() - currentFile.getSeekPosition() < EPSILON) {
+                        // skip to the next file if this is indeed the case
+                        if(fileListService.nextFile() != null) {
+                            this.nextFileCalled = true;
+                            this.fileListService.setNextFile();
+                        }
+                    }
+                }
+
             });
 
             this.mediaPlayer.setOnPlaying(()-> {
