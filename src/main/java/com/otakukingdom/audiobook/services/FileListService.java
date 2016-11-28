@@ -55,15 +55,21 @@ public class FileListService implements ChangeListener<AudioBook>{
         this.setSelectedAudioBookFile(selectedAudiobook, true);
     }
 
-    public void updateCompletionStatus(AudioBookFile currentFile, double durationSeconds, Integer completeness) {
-        for(AudioBookFile file : this.fileList) {
+    public void updateCompletionStatus(AudioBookFile currentFile) {
+        for(int i = 0; i < this.fileList.size(); i++) {
+            AudioBookFile file = this.fileList.get(i);
             if(file.getId().equals(currentFile.getId())) {
-                file.setSeekPosition(durationSeconds);
-
-                if(completeness != null) {
-                    file.setCompleteness(completeness);
+                try {
+                    Dao<AudioBookFile, Integer> fileDao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
+                    AudioBookFile retrievedFile = fileDao.queryForSameId(currentFile);
+                    file.setSeekPosition(retrievedFile.getSeekPosition());
+                    file.setCompleteness(retrievedFile.getCompleteness());
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
+
+            this.fileList.set(i, file);
         }
     }
 

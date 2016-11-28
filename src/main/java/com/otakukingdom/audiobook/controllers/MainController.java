@@ -224,8 +224,11 @@ public class MainController implements FileListObserver {
     private void resetMediaUI() {
         // steps for resetting the media UI
         playButton.setText("Play");
-        mediaSlider.setValue(0);
-        setDurationLabel(0);
+
+        if(this.mediaPlayer == null) {
+            mediaSlider.setValue(0);
+            setDurationLabel(0);
+        }
     }
 
     private void setDurationLabel(long seconds) {

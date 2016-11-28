@@ -128,7 +128,7 @@ public class MediaPlayerService implements FileListObserver {
             Dao<AudioBookFile, Integer> dao = DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
             dao.update(this.currentFile);
 
-            this.fileListService.updateCompletionStatus(this.currentFile, durationSeconds, completeness);
+            this.fileListService.updateCompletionStatus(this.currentFile);
         } catch (SQLException e) {
             e.printStackTrace();
         }
