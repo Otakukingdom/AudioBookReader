@@ -78,6 +78,10 @@ public class AudioBookFile {
         return file.getName();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public Integer getCompleteness() {
         return this.completeness;
     }

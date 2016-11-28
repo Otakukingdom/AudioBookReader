@@ -140,20 +140,18 @@ public class FileListService implements ChangeListener<AudioBook>{
     private void updateSelectedAudiobookFile() {
         // check if we have a selected audiobook file
         Integer selectedAudioBookFileId = this.selectedAudiobook.getSelectedFile();
-        if(selectedAudioBookFile != null) {
-            AudioBookFile foundFile = null;
+        AudioBookFile foundFile = null;
 
-            for(AudioBookFile currentFile : this.fileList) {
-                if(currentFile.getId().equals(selectedAudioBookFileId)) {
-                    foundFile = currentFile;
-                    break;
-                }
+        for(AudioBookFile currentFile : this.fileList) {
+            if(currentFile.getId().equals(selectedAudioBookFileId)) {
+                foundFile = currentFile;
+                break;
             }
+        }
 
-            if(foundFile != null) {
-                setSelectedAudioBookFile(foundFile, true);
-                return;
-            }
+        if(foundFile != null) {
+            setSelectedAudioBookFile(foundFile, true);
+            return;
         }
 
         // if we are here it means we don't have a selected file for whatever reason, we simply pick the
