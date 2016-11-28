@@ -31,6 +31,7 @@ public class MainController implements FileListObserver {
 
 
     public void initialize() {
+        this.sliderToSeekEnabled = false;
         this.settingService = SettingService.getInstance();
         this.fileListService = new FileListService();
         this.mediaPlayerService = new MediaPlayerService(this.fileListService);
@@ -54,6 +55,10 @@ public class MainController implements FileListObserver {
 
         // set the media position based on the slider change
         this.mediaSlider.valueProperty().addListener(((observable, oldValue, newValue) -> {
+            if(!sliderToSeekEnabled) {
+                return;
+            }
+
             double min = 0.5;
             if(!this.mediaSlider.isValueChanging()) {
                 double currentTime = this.mediaPlayer.getCurrentTime().toSeconds();
@@ -67,6 +72,7 @@ public class MainController implements FileListObserver {
         this.mediaSlider.valueChangingProperty().addListener(((observable, wasChanging, isChanging) -> {
             if(!isChanging) {
                 this.mediaPlayer.seek(Duration.seconds(this.mediaSlider.getValue()));
+                this.mediaPlayerService.saveState();
             }
         }));
 
@@ -163,7 +169,8 @@ public class MainController implements FileListObserver {
     }
 
     private void setMediaPlayerListener() {
-        this.mediaPlayerService.addListener((MediaPlayer mediaPlayer) -> {
+        this.mediaPlayerService.addListener((MediaPlayer mediaPlayer, boolean autoplay) -> {
+            this.sliderToSeekEnabled = false;
             this.mediaPlayer = mediaPlayer;
 
             if (this.mediaPlayer == null) {
@@ -178,15 +185,15 @@ public class MainController implements FileListObserver {
                 mediaSlider.setMax(this.mediaPlayer.getTotalDuration().toSeconds());
 
                 // update slider position
-                if(!mediaSlider.isValueChanging()) {
-                    AudioBookFile currentFile = this.mediaPlayerService.getCurrentFile();
-                    mediaPlayer.seek(Duration.seconds(currentFile.getSeekPosition()));
-                    mediaSlider.setValue(currentFile.getSeekPosition());
+                AudioBookFile currentFile = this.mediaPlayerService.getCurrentFile();
+                mediaPlayer.seek(Duration.seconds(currentFile.getSeekPosition()));
+                mediaSlider.setValue(currentFile.getSeekPosition());
 
-                    // update the label
-                    long seconds = currentFile.getSeekPosition().longValue();
-                    setDurationLabel(seconds);
-                }
+                // update the label
+                long seconds = currentFile.getSeekPosition().longValue();
+                setDurationLabel(seconds);
+
+                sliderToSeekEnabled = true;
             });
 
             this.mediaPlayer.setOnPlaying(()-> {
@@ -273,4 +280,5 @@ public class MainController implements FileListObserver {
 
     private List<AudioBook> audioBookList;
 
+    private boolean sliderToSeekEnabled;
 }

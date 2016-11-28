@@ -56,7 +56,7 @@ public class MediaPlayerService implements FileListObserver {
             // update the selected file
             this.currentFile = selectedFile;
             initMedia();
-            notifyListeners();
+            notifyListeners(false);
         }
     }
 
@@ -111,13 +111,14 @@ public class MediaPlayerService implements FileListObserver {
 
     // save the current media playing state to the db
     public void saveState() {
-        Duration duration = this.mediaPlayer.getCurrentTime();
-        double durationSeconds = duration.toSeconds();
-
-        currentFile.setSeekPosition(durationSeconds);
-
         Integer completeness = null;
         if(this.mediaPlayer.getTotalDuration() != null) {
+            Duration duration = this.mediaPlayer.getCurrentTime();
+            double durationSeconds = duration.toSeconds();
+            System.out.println("SAVE STATE CALLED: " + durationSeconds);
+
+            currentFile.setSeekPosition(durationSeconds);
+
             completeness = (int) ((durationSeconds / this.mediaPlayer.getTotalDuration().toSeconds()) * 100);
             if(completeness >= currentFile.getCompleteness()) {
                 currentFile.setCompleteness(completeness);
@@ -135,9 +136,9 @@ public class MediaPlayerService implements FileListObserver {
     }
 
 
-    private void notifyListeners() {
+    private void notifyListeners(boolean autoplay) {
         for(MediaPlayerObserver mediaPlayerObserver : listeners) {
-            mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer);
+            mediaPlayerObserver.mediaPlayerUpdated(this.mediaPlayer, autoplay);
         }
     }
 
