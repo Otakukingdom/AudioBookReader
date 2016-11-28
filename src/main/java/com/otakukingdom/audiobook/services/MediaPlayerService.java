@@ -115,8 +115,6 @@ public class MediaPlayerService implements FileListObserver {
         if(this.mediaPlayer.getTotalDuration() != null) {
             Duration duration = this.mediaPlayer.getCurrentTime();
             double durationSeconds = duration.toSeconds();
-            System.out.println("SAVE STATE CALLED: " + durationSeconds);
-
             currentFile.setSeekPosition(durationSeconds);
 
             completeness = (int) ((durationSeconds / this.mediaPlayer.getTotalDuration().toSeconds()) * 100);
