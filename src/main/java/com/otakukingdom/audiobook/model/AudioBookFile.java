@@ -78,10 +78,6 @@ public class AudioBookFile {
         return file.getName();
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public Integer getCompleteness() {
         return this.completeness;
     }
@@ -91,10 +87,16 @@ public class AudioBookFile {
     }
 
     public void setSeekPosition(Double seekPosition) {
+        System.out.println("Set seek position called: " + seekPosition + " - " + this.name);
+        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+            System.out.println(ste);
+        }
         this.seekPosition = seekPosition;
     }
 
     public Double getSeekPosition() {
+        System.out.println("GET SEEK POSITION CALLED:" + this.seekPosition + " - " + this.name);
+        Thread.currentThread().getStackTrace();
         return this.seekPosition;
     }
 

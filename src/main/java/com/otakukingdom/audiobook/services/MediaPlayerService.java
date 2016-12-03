@@ -21,6 +21,7 @@ import java.util.List;
 public class MediaPlayerService implements FileListObserver {
 
     public MediaPlayerService(FileListService fileListService) {
+        this.hasPlayed = false;
         this.listeners = new ArrayList<MediaPlayerObserver>();
         this.fileListService = fileListService;
     }
@@ -67,6 +68,7 @@ public class MediaPlayerService implements FileListObserver {
     private void initMedia() {
         // start from a clean slate
         setHasError(false);
+        this.hasPlayed = false;
 
         File file = new File(this.currentFile.getFullPath());
 
@@ -96,6 +98,12 @@ public class MediaPlayerService implements FileListObserver {
                         // handle error in mediaplayer object
                         setHasError(true);
                     });
+
+                    this.mediaPlayer.statusProperty().addListener((observable, oldStatus, newStatus) -> {
+                        if(newStatus == MediaPlayer.Status.PLAYING) {
+                            this.hasPlayed = true;
+                        }
+                    });
                 } else {
                     setHasError(true);
                 }
@@ -113,6 +121,11 @@ public class MediaPlayerService implements FileListObserver {
     public void saveState() {
         Integer completeness = null;
         if(this.mediaPlayer.getTotalDuration() != null) {
+            // should not save state unless this has been played
+            if(!this.hasPlayed) {
+                return;
+            }
+
             Duration duration = this.mediaPlayer.getCurrentTime();
             double durationSeconds = duration.toSeconds();
             currentFile.setSeekPosition(durationSeconds);
@@ -141,6 +154,7 @@ public class MediaPlayerService implements FileListObserver {
     }
 
     private boolean hasError;
+    private boolean hasPlayed;
     private Media media;
     private MediaPlayer mediaPlayer;
     private AudioBookFile currentFile;
