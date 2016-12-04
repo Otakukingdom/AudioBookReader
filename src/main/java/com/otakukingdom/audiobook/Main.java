@@ -29,7 +29,6 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         MainController mainController = fxmlLoader.getController();
-        System.out.println("MAIN CONTROLLER IS " + mainController.toString());
         mainController.setDirectoryService(directoryService);
         mainController.setAudioBookScanService(audioBookScanService);
 
