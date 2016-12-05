@@ -137,7 +137,6 @@ public class MainController implements FileListObserver {
         // once we are done, we can finally load the audiobook that was last selected
         // if possible
         AudioBook lastAudioBook = this.settingService.getCurrentAudioBook();
-        System.out.println("Last audiobook title was: " + lastAudioBook);
         if(!(lastAudioBook == null)) {
             // get the index of the matching audiobook if there is one
             List<AudioBook> abList = this.libraryListViewUI.getItems();
@@ -146,14 +145,12 @@ public class MainController implements FileListObserver {
             int found = -1;
             for(int i = 0; i < abList.size(); i++) {
                 // see if we found it
-                System.out.println("Testing: " + abList.get(i).getId() + " with " + lastAudioBook.getId());
                 if(abList.get(i).getId().equals(lastAudioBook.getId())) {
                     found = i;
                 }
             }
 
             // see if we found it
-            System.out.println("FOUND IS: " + found);
             if(found != -1) {
                 this.libraryListViewUI.getSelectionModel().select(found);
             }
