@@ -51,6 +51,10 @@ public class AudioBook {
         this.createdAt = new Date();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public void setSelectedFile(int selectedFile) {
         this.selectedFile = selectedFile;
     }

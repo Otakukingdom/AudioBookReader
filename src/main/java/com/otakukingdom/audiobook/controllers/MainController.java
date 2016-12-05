@@ -48,13 +48,22 @@ public class MainController implements FileListObserver {
         this.fileListService.addListener(this);
         this.fileListService.addListener(mediaPlayerService);
 
-        // ensures that the fileList service knows about the change
+        // ensures that the fileList service knows about the change when
+        // user changes the library selection
         this.libraryListViewUI.getSelectionModel().selectedItemProperty().addListener(fileListService);
+
+        // ensures that when the audio book is changed, it is written in the settings file
+        this.libraryListViewUI.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            if(newValue != null) {
+                this.settingService.setCurrentAudioBook(newValue);
+            }
+        }));
 
         // set the new audiobook file based on the filelist UI event
         this.fileListUI.getSelectionModel().selectedItemProperty().
                 addListener(((observable, oldValue, newValue) -> {
                     if(newValue != null) {
+                        // notify the fileListService
                         fileListService.setSelectedAudioBookFile(newValue);
                     }
                 }));
@@ -124,6 +133,31 @@ public class MainController implements FileListObserver {
             this.audioBookList = this.libraryService.getAudioBookList();
             libraryListViewUI.setItems(FXCollections.<AudioBook>observableArrayList(this.audioBookList));
         });
+
+        // once we are done, we can finally load the audiobook that was last selected
+        // if possible
+        AudioBook lastAudioBook = this.settingService.getCurrentAudioBook();
+        System.out.println("Last audiobook title was: " + lastAudioBook);
+        if(!(lastAudioBook == null)) {
+            // get the index of the matching audiobook if there is one
+            List<AudioBook> abList = this.libraryListViewUI.getItems();
+
+            // select the last loaded audiobook if we can find a match with the one on the libraryListViewUI
+            int found = -1;
+            for(int i = 0; i < abList.size(); i++) {
+                // see if we found it
+                System.out.println("Testing: " + abList.get(i).getId() + " with " + lastAudioBook.getId());
+                if(abList.get(i).getId().equals(lastAudioBook.getId())) {
+                    found = i;
+                }
+            }
+
+            // see if we found it
+            System.out.println("FOUND IS: " + found);
+            if(found != -1) {
+                this.libraryListViewUI.getSelectionModel().select(found);
+            }
+        }
     }
 
     @FXML

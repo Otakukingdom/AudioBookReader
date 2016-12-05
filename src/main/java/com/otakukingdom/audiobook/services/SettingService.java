@@ -1,10 +1,14 @@
 package com.otakukingdom.audiobook.services;
 
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.otakukingdom.audiobook.model.AudioBook;
 import org.ini4j.Wini;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -29,6 +33,25 @@ public class SettingService {
             instance = new SettingService();
         }
         return instance;
+    }
+
+    public void setCurrentAudioBook(AudioBook audioBook) {
+        this.ini.put("main", "currentAudiobook", audioBook.getId());
+
+        save();
+    }
+
+    public AudioBook getCurrentAudioBook() {
+        int currentBook = this.ini.get("main", "currentAudiobook", int.class);
+
+        try {
+            Dao<AudioBook, Integer> audioBookDao =
+                    DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBook.class);
+            AudioBook audioBook = audioBookDao.queryForId(currentBook);
+            return audioBook;
+        } catch(SQLException e) {
+            return null;
+        }
     }
 
 
