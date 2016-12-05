@@ -1,10 +1,14 @@
 package com.otakukingdom.audiobook.model;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.otakukingdom.audiobook.services.DatabaseService;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Date;
 
 /**
@@ -110,6 +114,22 @@ public class AudioBookFile {
             return "Started";
         } else {
             return "Unstarted";
+        }
+    }
+
+    public void setFileStatus() {
+        File check = new File(this.fullPath);
+        boolean exists = check.exists();
+        if(exists != this.fileExists) {
+            this.fileExists = exists;
+
+            try {
+                Dao<AudioBookFile, Integer> dao =
+                        DaoManager.createDao(DatabaseService.getInstance().getConnectionSource(), AudioBookFile.class);
+                dao.update(this);
+            } catch (SQLException e) {
+                // ignore if we cannot set into db
+            }
         }
     }
 }
