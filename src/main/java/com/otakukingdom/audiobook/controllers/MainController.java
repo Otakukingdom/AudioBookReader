@@ -256,6 +256,9 @@ public class MainController implements FileListObserver {
                             this.fileListService.setNextFile();
                         }
                     }
+
+                    // if we are here, it means we are good to go, play this file
+                    this.mediaPlayer.play();
                 }
 
             });
