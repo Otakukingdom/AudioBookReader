@@ -150,6 +150,8 @@ public class AudioBookScanService implements DirectoryObserver {
             // will be set to true if even one failure occurs
             boolean hasNoFail = true;
             for(File currentAudioFile : audioFiles) {
+                // CurrentFile is
+                System.out.println("Current file is: " + currentAudioFile.toPath().toString());
                 if(!registerAudioFile(audiobookId, currentAudioFile)) {
                     hasNoFail = false;
                 }
@@ -191,7 +193,9 @@ public class AudioBookScanService implements DirectoryObserver {
         Tika tika = new Tika();
         try {
             String mediaType = tika.detect(file);
-            if(!mediaType.startsWith("audio")) {
+            System.out.println("File is " + file.toPath().toString());
+            System.out.println("FILE DETECTED AS: " + mediaType);
+            if(!mediaType.startsWith("audio") && !mediaType.startsWith(("video"))) {
                 return false;
             }
         } catch (IOException e) {
