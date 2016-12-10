@@ -12,13 +12,20 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 public class Main extends Application {
 
 
     @Override
     public void start(Stage stage) throws Exception {
+        // set the app icon
+        Image image = new Image(getClass().getClassLoader().getResourceAsStream("icon.png"));
+        stage.getIcons().add(image);
+
         // init services
         DirectoryService directoryService = new DirectoryService();
         AudioBookScanService audioBookScanService = new AudioBookScanService(directoryService);
@@ -33,6 +40,8 @@ public class Main extends Application {
         mainController.setAudioBookScanService(audioBookScanService);
 
         stage.setScene(scene);
+
+
         stage.show();
     }
 
